@@ -1,14 +1,22 @@
 import { router } from "expo-router";
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useContext, useMemo } from 'react';
 import { Text, View, TouchableOpacity, Animated } from 'react-native';
-import dashboardStyles from '../../styles/dashboard_styles';
+import dashboardStyles from "../../styles/dashboard_styles";
+import { AuthContext } from "./AuthContext";
 
-const Dashboard = () => {
+
+const Dashboard: React.FC = () => {
+    const { logout, user } = useContext(AuthContext)!;
+    
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const floatAnim = useRef(new Animated.Value(30)).current;
 
     const fadeAnimButton = useRef(new Animated.Value(0)).current;
     const floatAnimButton = useRef(new Animated.Value(30)).current;
+
+    const greetingMessage = useMemo(() => {
+        return `Welcome to our project, ${user?.username || "Guest"}!`;
+    }, [user]);
 
     useEffect(() => {
         Animated.sequence([
@@ -38,6 +46,7 @@ const Dashboard = () => {
     }, [fadeAnim, floatAnim, fadeAnimButton, floatAnimButton]);
 
     const handleLogout = () => {
+        logout();
         router.replace("/");
     };
 
@@ -49,7 +58,7 @@ const Dashboard = () => {
                     transform: [{ translateY: floatAnim }],
                 }}
             >
-                <Text style={dashboardStyles.welcomeText}>Welcome To Our Project!</Text>
+                <Text style={dashboardStyles.welcomeText}>{greetingMessage}</Text>
             </Animated.View>
             <Animated.View
                 style={{

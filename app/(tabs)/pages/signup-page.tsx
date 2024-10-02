@@ -1,10 +1,13 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useContext, useMemo } from "react";
 import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import signupStyles from "../../styles/signup_styles";
+import { AuthContext } from "./AuthContext";
 
-const SignUpPage = () => {
+const SignUpPage: React.FC = () => {
+    
+    const { login } = useContext(AuthContext)!;
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -12,20 +15,48 @@ const SignUpPage = () => {
     const [showPassword, setShowPassword] = useState(false); 
     const [showConfirmPassword, setShowConfirmPassword] = useState(false); 
   
-    const handleSignUp = () => {
+    const isPasswordValid = useMemo(() => {
+      return password.length >= 6; // Example: Consider a valid password to be at least 6 characters long
+  }, [password]);
+
+    const handleSignUp = async () => {
       if (!username || !email || !password || !confirmPassword) {
         Alert.alert('Error', 'Please fill in all fields!');
         return;
       }
-  
+    
       if (password !== confirmPassword) {
         Alert.alert('Error', 'Passwords do not match!');
         return;
       }
-      console.log('Signing up with:', { username, email, password }); 
-      router.replace("pages/dashboard");
-  };
 
+      if (!isPasswordValid) {
+        Alert.alert('Error', 'Password must be at least 6 characters long!');
+        return;
+      }
+    
+      try {
+        const response = await fetch('http://192.168.56.1/signup_api.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `username=${username}&email=${email}&password=${password}`,
+        });
+    
+        const result = await response.json();
+        if (result.status === 'success') {
+          Alert.alert('Success', result.message);
+          login({ username, email });  
+          router.replace("pages/dashboard");
+        } else {
+          Alert.alert('Error', result.message);
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to connect to the server!');
+      }
+    };
+    
 
     return (
         <View style={signupStyles.container}>

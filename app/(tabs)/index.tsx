@@ -1,16 +1,19 @@
 import { router } from "expo-router";
-import { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext, useMemo } from "react";
 import { useFocusEffect } from '@react-navigation/native';
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import loginStyles from "../styles/login_styles";
+import { AuthContext } from './pages/AuthContext';
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
+    const { login } = useContext(AuthContext)!;
     const [username, setUsername] = useState("");
     const [usernameError, setUsernameError] = useState('');
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [passwordError, setPasswordError] = useState('');
+    
 
     useFocusEffect(
         useCallback(() => {
@@ -21,32 +24,39 @@ const LoginPage = () => {
         }, [])
     );
 
-    const handleLogin = () => {
-        let isValid = true;
+    const isUsernameValid = useMemo(() => {
+        return username.length > 0; // Example validation
+    }, [username]);
 
-        setUsernameError('');
-        setPasswordError('');
+    const isPasswordValid = useMemo(() => {
+        return password.length >= 6; // Example: Consider valid password to be at least 6 characters long
+    }, [password]);
 
-        if (username === '') {
-            setUsernameError('Please Enter a Username');
-            isValid = false;
-        } else if (username !== "123") {
-            setUsernameError('Invalid Username');
-            isValid = false;
+    const handleLogin = async () => {
+        if (!isUsernameValid || !isPasswordValid) {
+            Alert.alert('Error', 'Invalid Credential!');
+            return;
         }
 
-        if (password === '') {
-            setPasswordError('Please Enter a Password');
-            isValid = false;
-        } else if (password !== "123") {
-            setPasswordError('Invalid Password');
-            isValid = false;
-        }
+        try {
+            const response = await fetch('http://192.168.56.1/api/log_in_api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${username}&password=${password}`,
+            });
 
-        if (isValid) {
-            setUsername("");
-            setPassword("");
-            router.replace("pages/dashboard");
+            const result = await response.json();
+            if (result.status === 'success') {
+                Alert.alert('Success', result.message);
+                login({ username, email: result.email });
+                router.replace("pages/dashboard"); // Navigate to the dashboard on success
+            } else {
+                Alert.alert('Error', result.message);
+            }
+        } catch (error) {
+            Alert.alert('Error', 'Failed to connect to the server!');
         }
     };
 
