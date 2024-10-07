@@ -12,7 +12,7 @@ const LoginPage: React.FC = () => {
 
     useFocusEffect(
         useCallback(() => {
-            resetFormFields();  // Reset all fields when the screen is focused
+            resetFormFields(); 
         }, [])
     );
 
@@ -38,7 +38,7 @@ const LoginPage: React.FC = () => {
             if (result.status === 'success') {
                 Alert.alert('Success', result.message);
                 login({ username: formFields.username, email: result.email });
-                router.replace("pages/dashboard");  // Navigate to the dashboard
+                router.replace("pages/dashboard");  
             } else {
                 Alert.alert('Error', result.message);
             }
@@ -54,22 +54,22 @@ const LoginPage: React.FC = () => {
             <TextInput
                 style={loginStyles.userInput}
                 placeholder='Username'
-                value={formFields.username}  // Controlled input from AuthContext
-                onChangeText={(value) => setFormField('username', value)}  // Update username in context
+                value={formFields.username}  
+                onChangeText={(value) => setFormField('username', value)}  
             />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TextInput
                     style={loginStyles.userInput}
                     placeholder='Password'
-                    value={formFields.password}  // Controlled input from AuthContext
-                    onChangeText={(value) => setFormField('password', value)}  // Update password in context
-                    secureTextEntry={!showPassword}  // Toggle password visibility
+                    value={formFields.password}  
+                    onChangeText={(value) => setFormField('password', value)}  
+                    secureTextEntry={!showPassword}  
                 />
                 <TouchableOpacity style={{ position: 'absolute', right: 30 }}
                     onPress={() => setShowPassword(!showPassword)}>
                     <Ionicons
-                        name={showPassword ? 'eye-outline' : 'eye-off-outline'}  // Toggle icon
+                        name={showPassword ? 'eye-outline' : 'eye-off-outline'} 
                         size={24}
                         color="black"
                     />

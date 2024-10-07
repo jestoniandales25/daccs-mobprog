@@ -12,7 +12,7 @@ const SignUpPage: React.FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const isPasswordValid = useMemo(() => {
-        return formFields.password.length >= 6;  // Password validation
+        return formFields.password.length >= 6;  
     }, [formFields.password]);
 
     const handleSignUp = async () => {
@@ -43,7 +43,7 @@ const SignUpPage: React.FC = () => {
             const result = await response.json();
             if (result.status === 'success') {
                 Alert.alert('Success', result.message);
-                login({ username: formFields.username, email: formFields.email });  // Save user to AuthContext
+                login({ username: formFields.username, email: formFields.email });  
                 router.replace("pages/dashboard");
             } else {
                 Alert.alert('Error', result.message);
@@ -60,23 +60,23 @@ const SignUpPage: React.FC = () => {
             <TextInput
                 style={signupStyles.signupInput}
                 placeholder='Username'
-                value={formFields.username}  // Controlled input from AuthContext
-                onChangeText={(value) => setFormField('username', value)}  // Update username in context
+                value={formFields.username}  
+                onChangeText={(value) => setFormField('username', value)}  
             />
 
             <TextInput
                 style={signupStyles.signupInput}
                 placeholder='Email'
-                value={formFields.email}  // Controlled input from AuthContext
-                onChangeText={(value) => setFormField('email', value)}  // Update email in context
+                value={formFields.email} 
+                onChangeText={(value) => setFormField('email', value)}  
             />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TextInput
                     style={signupStyles.signupInput}
                     placeholder='Password'
-                    value={formFields.password}  // Controlled input from AuthContext
-                    onChangeText={(value) => setFormField('password', value)}  // Update password in context
+                    value={formFields.password} 
+                    onChangeText={(value) => setFormField('password', value)}  
                     secureTextEntry={!showPassword}
                 />
                 <TouchableOpacity style={{ position: 'absolute', right: 30 }}
