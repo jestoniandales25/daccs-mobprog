@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useState, useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,30 +7,17 @@ import loginStyles from "../styles/login_styles";
 import { AuthContext } from './pages/AuthContext';
 
 const LoginPage: React.FC = () => {
-    const { login } = useContext(AuthContext)!;
-    const [username, setUsername] = useState("");
-    const [usernameError, setUsernameError] = useState('');
-    const [password, setPassword] = useState("");
+    const { login, formFields, setFormField, resetFormFields } = useContext(AuthContext)!;
     const [showPassword, setShowPassword] = useState(false);
-    const [passwordError, setPasswordError] = useState('');
-    
 
     useFocusEffect(
         useCallback(() => {
-            setUsername("");
-            setPassword("");
-            setUsernameError("");
-            setPasswordError("");
+            resetFormFields();  // Reset all fields when the screen is focused
         }, [])
     );
 
-    const isUsernameValid = useMemo(() => {
-        return username.length > 0; // Example validation
-    }, [username]);
-
-    const isPasswordValid = useMemo(() => {
-        return password.length >= 6; // Example: Consider valid password to be at least 6 characters long
-    }, [password]);
+    const isUsernameValid = formFields.username.length > 0;
+    const isPasswordValid = formFields.password.length >= 6;
 
     const handleLogin = async () => {
         if (!isUsernameValid || !isPasswordValid) {
@@ -44,14 +31,14 @@ const LoginPage: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `username=${username}&password=${password}`,
+                body: `username=${formFields.username}&password=${formFields.password}`,
             });
 
             const result = await response.json();
             if (result.status === 'success') {
                 Alert.alert('Success', result.message);
-                login({ username, email: result.email });
-                router.replace("pages/dashboard"); // Navigate to the dashboard on success
+                login({ username: formFields.username, email: result.email });
+                router.replace("pages/dashboard");  // Navigate to the dashboard
             } else {
                 Alert.alert('Error', result.message);
             }
@@ -67,29 +54,27 @@ const LoginPage: React.FC = () => {
             <TextInput
                 style={loginStyles.userInput}
                 placeholder='Username'
-                onChangeText={(val) => setUsername(val)}
+                value={formFields.username}  // Controlled input from AuthContext
+                onChangeText={(value) => setFormField('username', value)}  // Update username in context
             />
-
-            {usernameError ? <Text style={loginStyles.uerrorText}>{usernameError}</Text> : null}
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <TextInput
-                    style={[loginStyles.userInput]} // Take up available space
+                    style={loginStyles.userInput}
                     placeholder='Password'
-                    onChangeText={(val) => setPassword(val)}
-                    secureTextEntry={!showPassword} // Toggle password visibility
+                    value={formFields.password}  // Controlled input from AuthContext
+                    onChangeText={(value) => setFormField('password', value)}  // Update password in context
+                    secureTextEntry={!showPassword}  // Toggle password visibility
                 />
                 <TouchableOpacity style={{ position: 'absolute', right: 30 }}
                     onPress={() => setShowPassword(!showPassword)}>
                     <Ionicons
-                        name={showPassword ? 'eye-outline' : 'eye-off-outline'} // Toggle icon
+                        name={showPassword ? 'eye-outline' : 'eye-off-outline'}  // Toggle icon
                         size={24}
                         color="black"
                     />
                 </TouchableOpacity>
             </View>
-
-            {passwordError ? <Text style={loginStyles.perrorText}>{passwordError}</Text> : null}
 
             <TouchableOpacity style={loginStyles.button} onPress={handleLogin}>
                 <Text style={loginStyles.text}>Login</Text>
