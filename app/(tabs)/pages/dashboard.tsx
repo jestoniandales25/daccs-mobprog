@@ -1,13 +1,13 @@
 import { router } from "expo-router";
 import { useRef, useEffect, useContext, useMemo } from 'react';
-import { Text, View, TouchableOpacity, Animated } from 'react-native';
+import { Text, View, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import dashboardStyles from "../../styles/dashboard_styles";
 import { AuthContext } from "./AuthContext";
-
+import Clock from "../../components/Clock";  // Import the Clock component
 
 const Dashboard: React.FC = () => {
     const { logout, user } = useContext(AuthContext)!;
-    
+
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const floatAnim = useRef(new Animated.Value(30)).current;
 
@@ -60,6 +60,12 @@ const Dashboard: React.FC = () => {
             >
                 <Text style={dashboardStyles.welcomeText}>{greetingMessage}</Text>
             </Animated.View>
+
+            {/* Clock Component for displaying real-time time and date */}
+            <View style={dashboardStyles.clockContainer}>
+                <Clock />
+            </View>
+
             <Animated.View
                 style={{
                     opacity: fadeAnimButton,
@@ -73,5 +79,7 @@ const Dashboard: React.FC = () => {
         </View>
     );
 };
+
+
 
 export default Dashboard;

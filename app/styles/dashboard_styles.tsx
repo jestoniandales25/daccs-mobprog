@@ -25,6 +25,10 @@ const dashboardStyles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 18,
     },
+    clockContainer: {
+        marginTop: 20,  // Adjust the margin as per your layout
+        alignItems: 'center',
+    }
 });
 
 export default dashboardStyles;
