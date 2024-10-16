@@ -4,19 +4,19 @@ import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import signupStyles from "../../styles/signup_styles";
 import { AuthContext } from "./AuthContext";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebaseConfig";
 
 const SignUpPage: React.FC = () => {
-    const { login, formFields, setFormField, resetFormFields } = useContext(AuthContext)!;
+    const { formFields, setFormField } = useContext(AuthContext)!;
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false); 
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const isPasswordValid = useMemo(() => {
-        return formFields.password.length >= 6;  
-    }, [formFields.password]);
+    const isPasswordValid = useMemo(() => formFields.password.length >= 6, [formFields.password]);
 
     const handleSignUp = async () => {
-        if (!formFields.username || !formFields.email || !formFields.password || !confirmPassword) {
+        if (!formFields.email || !formFields.password || !confirmPassword) {
             Alert.alert('Error', 'Please fill in all fields!');
             return;
         }
@@ -32,38 +32,17 @@ const SignUpPage: React.FC = () => {
         }
 
         try {
-            const response = await fetch('http://192.168.56.1/signup_api.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `username=${formFields.username}&email=${formFields.email}&password=${formFields.password}`,
-            });
-
-            const result = await response.json();
-            if (result.status === 'success') {
-                Alert.alert('Success', result.message);
-                login({ username: formFields.username, email: formFields.email });  
-                router.replace("pages/dashboard");
-            } else {
-                Alert.alert('Error', result.message);
-            }
+            await createUserWithEmailAndPassword(auth, formFields.email, formFields.password);
+            Alert.alert('Success', 'Sign up successful!');
+            router.replace('/pages/dashboard');
         } catch (error) {
-            Alert.alert('Error', 'Failed to connect to the server!');
+            Alert.alert('Error', 'Failed to sign up. Please try again.');
         }
     };
 
     return (
         <View style={signupStyles.container}>
             <Text style={signupStyles.textHeader}>Sign Up</Text>
-
-            <TextInput
-                style={signupStyles.signupInput}
-                placeholder='Username'
-                value={formFields.username}  
-                onChangeText={(value) => setFormField('username', value)}  
-            />
-
             <TextInput
                 style={signupStyles.signupInput}
                 placeholder='Email'

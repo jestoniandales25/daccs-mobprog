@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+
 import React, { useCallback, useContext, useState } from "react";
 import { useFocusEffect } from '@react-navigation/native';
 import { Text, View, TextInput, TouchableOpacity, Alert } from "react-native";
@@ -16,34 +16,19 @@ const LoginPage: React.FC = () => {
         }, [])
     );
 
-    const isUsernameValid = formFields.username.length > 0;
+    const isEmailValid = formFields.email.length > 0;
     const isPasswordValid = formFields.password.length >= 6;
 
     const handleLogin = async () => {
-        if (!isUsernameValid || !isPasswordValid) {
-            Alert.alert('Error', 'Invalid Credential!');
+        if (!isEmailValid || !isPasswordValid) {
+            Alert.alert('Error', 'Please enter a valid email and password.');
             return;
         }
-
         try {
-            const response = await fetch('http://192.168.56.1/api/log_in_api.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `username=${formFields.username}&password=${formFields.password}`,
-            });
+            await login();
 
-            const result = await response.json();
-            if (result.status === 'success') {
-                Alert.alert('Success', result.message);
-                login({ username: formFields.username, email: result.email });
-                router.replace("pages/dashboard");  
-            } else {
-                Alert.alert('Error', result.message);
-            }
         } catch (error) {
-            Alert.alert('Error', 'Failed to connect to the server!');
+            Alert.alert('Error', 'Failed to log in. Please check your credentials.');
         }
     };
 
@@ -53,9 +38,11 @@ const LoginPage: React.FC = () => {
 
             <TextInput
                 style={loginStyles.userInput}
-                placeholder='Username'
-                value={formFields.username}  
-                onChangeText={(value) => setFormField('username', value)}  
+                placeholder='Email'
+                value={formFields.email}  
+                onChangeText={(value) => setFormField('email', value)}  
+                keyboardType="email-address"
+                autoCapitalize="none"
             />
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>

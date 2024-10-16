@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
     const floatAnimButton = useRef(new Animated.Value(30)).current;
 
     const greetingMessage = useMemo(() => {
-        return `Welcome to our project, ${user?.username || "Guest"}!`;
+        return `Welcome to our project, ${user?.email || "Guest"}!`;
     }, [user]);
 
     useEffect(() => {
