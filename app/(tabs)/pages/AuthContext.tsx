@@ -76,9 +76,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setUser({ email: userCredential.user.email });
             setIsAuthenticated(true);
             router.push('/pages/dashboard'); 
-        } catch (error) {
-            console.error('Login failed:', error);
-
+        } catch (error: any) {
+            Alert.alert('Error', 'Invalid Email or Password. Please try again.');
         }
     };
 

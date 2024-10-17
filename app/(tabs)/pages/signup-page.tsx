@@ -7,17 +7,35 @@ import { AuthContext } from "./AuthContext";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebaseConfig";
 
+const allowedDomains = ['gmail.com', 'yahoo.com', 'outlook.com'];
+
+
 const SignUpPage: React.FC = () => {
     const { formFields, setFormField } = useContext(AuthContext)!;
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false); 
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    
 
-    const isPasswordValid = useMemo(() => formFields.password.length >= 6, [formFields.password]);
+    const isPasswordValid = useMemo(() => {
+        return formFields.password.length >= 6;  
+    }, [formFields.password]);
+
+    const isEmailValid = (email: string) => {
+        const emailParts = email.split('@');
+        if (emailParts.length !== 2) return false;
+        const domain = emailParts[1];
+        return allowedDomains.includes(domain);
+    };
 
     const handleSignUp = async () => {
         if (!formFields.email || !formFields.password || !confirmPassword) {
             Alert.alert('Error', 'Please fill in all fields!');
+            return;
+        }
+
+        if (!isEmailValid(formFields.email)) {
+            Alert.alert('Error', 'Invalid email domain! Please use a valid email like @gmail.com, @yahoo.com, or @outlook.com.');
             return;
         }
 
@@ -58,6 +76,7 @@ const SignUpPage: React.FC = () => {
                     onChangeText={(value) => setFormField('password', value)}  
                     secureTextEntry={!showPassword}
                 />
+                
                 <TouchableOpacity style={{ position: 'absolute', right: 30 }}
                     onPress={() => setShowPassword(!showPassword)}>
                     <Ionicons
