@@ -33,12 +33,12 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 48, // Adjust font size for the clock
         fontWeight: 'bold',
-        color: "#00ffff", // You can customize the text color
+        color: "#000000", // You can customize the text color
     },
     dateText: {
         fontSize: 24, // Adjust font size for the date
         marginTop: 10,
-        color: "#00ffff", // You can customize the text color
+        color: "#000000", // You can customize the text color
     },
 });
 

@@ -82,11 +82,6 @@ const Dashboard: React.FC = () => {
     };
 
     return (
-        <LinearGradient
-            // Apply the darker radiant background colors
-            colors={['#1e3c72', '#2a5298']}  // Dark blue gradient
-            style={dashboardStyles.container}
-        >
         <View style={dashboardStyles.container}>
             <Animated.View
                 style={{
@@ -119,7 +114,6 @@ const Dashboard: React.FC = () => {
                         style={dashboardStyles.textInput}
                         placeholder="Enter your birthdate (MM/DD)"
                         value={birthdate}
-                        placeholderTextColor="#00ffff" 
                         onChangeText={handleBirthdateChange}
                     />
                     {zodiacSign ? (
@@ -141,7 +135,6 @@ const Dashboard: React.FC = () => {
                 </TouchableOpacity>
             </Animated.View>
         </View>
-        </LinearGradient>
     );
 };
 
